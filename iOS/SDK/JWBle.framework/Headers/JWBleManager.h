@@ -89,6 +89,15 @@ NS_ASSUME_NONNULL_BEGIN
  Default: false
  */
 @property(nonatomic, assign) BOOL isProduce;
+
+
+/// 是否SN快速扫描模式
+/// 决定是否全量获取设备信息
+/// 默认：false
+/// Default: false
+///
+@property(nonatomic, assign) BOOL isSNQR;
+
 @property(nonatomic, assign) BOOL checkSpecialOtaShutdown;
 @property(nonatomic, strong) NSMutableArray *cacheLogArr;
 

@@ -81,7 +81,7 @@
     NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@",self.basePath,self.selectedFileName]]];
     __weak __typeof(self)weakSelf = self;
     if (isCommon) {
-        [[JWBleOTAAction shareInstance] startOTAWithData:data callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
+        [[JWBleOTAAction shareInstance] startOTAV2ForWithData:data prefersUpgradeUsingOTAMode:isCommon callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
             
             [weakSelf.view hideAllToasts];
             [weakSelf.view hideToastActivity];
@@ -104,7 +104,7 @@
             }
         }];
     } else {
-        [[JWBleOTAAction shareInstance] startImageOTAWithData:data callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
+        [[JWBleOTAAction shareInstance] startOTAV2ForWithData:data prefersUpgradeUsingOTAMode:isCommon callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
             
             [weakSelf.view hideAllToasts];
             [weakSelf.view hideToastActivity];

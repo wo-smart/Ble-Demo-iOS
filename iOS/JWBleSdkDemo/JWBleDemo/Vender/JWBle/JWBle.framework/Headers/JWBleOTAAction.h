@@ -12,10 +12,9 @@
 
 + (JWBleOTAAction *)shareInstance;
 
-- (void)startOTAWithData:(NSData *)data callBack:(nonnull JWBleDFUCallBack)callBack;
-- (void)startImageOTAWithData:(NSData *)data callBack:(nonnull JWBleDFUCallBack)callBack;
+- (void)startOTAV2ForWithData:(NSData*)data prefersUpgradeUsingOTAMode:(BOOL)OTAModel andPeripheral:(CBPeripheral*)per callBack:(nonnull JWBleDFUCallBack)callBack;
 
-//- (void)startOTAV2ForWithData:(NSData*)data prefersUpgradeUsingOTAMode:(BOOL)OTAModel callBack:(nonnull JWBleDFUCallBack)callBack;
+- (void)startOTAV2ForWithData:(NSData*)data prefersUpgradeUsingOTAMode:(BOOL)OTAModel callBack:(nonnull JWBleDFUCallBack)callBack;
 
 - (void)cancelAllPeripheralConnections;
 

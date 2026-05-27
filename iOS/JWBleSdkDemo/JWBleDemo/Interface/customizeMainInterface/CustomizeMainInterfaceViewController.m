@@ -57,7 +57,7 @@
     NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath: basePath]];
     
 //    NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@",basePath,fileName]]];
-    [[JWBleOTAAction shareInstance] startImageOTAWithData:data callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
+    [[JWBleOTAAction shareInstance] startOTAV2ForWithData:data prefersUpgradeUsingOTAMode:NO callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
         
         if (deviceDFUStatus == JWBleDeviceDFUStatus_FileNotExist) {
             

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -122,15 +122,11 @@
 		4DEE82BF224266130068A80B /* NSString+TTT.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEE82BD224266130068A80B /* NSString+TTT.m */; };
 		4DEE82C3224266A90068A80B /* JWBleDemoHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEE82C2224266A90068A80B /* JWBleDemoHelp.m */; };
 		4DEE82C7224268010068A80B /* UIView+Toast.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DEE82C6224268010068A80B /* UIView+Toast.m */; };
+		BE1D280E2FC68B8500C6D10F /* RTKLEFoundation.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1D280C2FC68B8500C6D10F /* RTKLEFoundation.xcframework */; };
+		BE1D280F2FC68B8500C6D10F /* RTKOTASDK.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1D280D2FC68B8500C6D10F /* RTKOTASDK.xcframework */; };
 		BECD5C752D646B7C002E1EE5 /* HRMovementDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BECD5C742D646B7C002E1EE5 /* HRMovementDataViewController.m */; };
 		BECD5C7E2D64789C002E1EE5 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7A2D64789C002E1EE5 /* CocoaLumberjack.framework */; };
-		BECD5C7F2D64789C002E1EE5 /* RTKLEFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7C2D64789C002E1EE5 /* RTKLEFoundation.framework */; };
-		BECD5C802D64789C002E1EE5 /* RTKOTASDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7D2D64789C002E1EE5 /* RTKOTASDK.framework */; };
-		BECD5C812D64789C002E1EE5 /* RTKAudioConnectSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7B2D64789C002E1EE5 /* RTKAudioConnectSDK.framework */; };
 		BECD5C822D6478B9002E1EE5 /* CocoaLumberjack.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7A2D64789C002E1EE5 /* CocoaLumberjack.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BECD5C832D6478DA002E1EE5 /* RTKAudioConnectSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7B2D64789C002E1EE5 /* RTKAudioConnectSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BECD5C842D6478DA002E1EE5 /* RTKLEFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7C2D64789C002E1EE5 /* RTKLEFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BECD5C852D6478DA002E1EE5 /* RTKOTASDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BECD5C7D2D64789C002E1EE5 /* RTKOTASDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		E21BA8EE2420C3C000D58E28 /* OTARecordModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E21BA8ED2420C3C000D58E28 /* OTARecordModel.m */; };
 		E259059B2429B1B60043570F /* UpdateFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E259059A2429B1B60043570F /* UpdateFileModel.m */; };
 		E29786542423576200E9D10B /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E29786212423576200E9D10B /* LICENSE */; };
@@ -166,9 +162,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				BECD5C832D6478DA002E1EE5 /* RTKAudioConnectSDK.framework in Embed Frameworks */,
-				BECD5C842D6478DA002E1EE5 /* RTKLEFoundation.framework in Embed Frameworks */,
-				BECD5C852D6478DA002E1EE5 /* RTKOTASDK.framework in Embed Frameworks */,
 				BECD5C822D6478B9002E1EE5 /* CocoaLumberjack.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -366,12 +359,11 @@
 		4DEE82C5224268010068A80B /* UIView+Toast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Toast.h"; sourceTree = "<group>"; };
 		4DEE82C6224268010068A80B /* UIView+Toast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Toast.m"; sourceTree = "<group>"; };
 		81E2258C474A0132D89B0FBB /* libPods-JWBleDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-JWBleDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1D280C2FC68B8500C6D10F /* RTKLEFoundation.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = RTKLEFoundation.xcframework; sourceTree = "<group>"; };
+		BE1D280D2FC68B8500C6D10F /* RTKOTASDK.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = RTKOTASDK.xcframework; sourceTree = "<group>"; };
 		BECD5C732D646B7C002E1EE5 /* HRMovementDataViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HRMovementDataViewController.h; sourceTree = "<group>"; };
 		BECD5C742D646B7C002E1EE5 /* HRMovementDataViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HRMovementDataViewController.m; sourceTree = "<group>"; };
 		BECD5C7A2D64789C002E1EE5 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CocoaLumberjack.framework; sourceTree = "<group>"; };
-		BECD5C7B2D64789C002E1EE5 /* RTKAudioConnectSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RTKAudioConnectSDK.framework; sourceTree = "<group>"; };
-		BECD5C7C2D64789C002E1EE5 /* RTKLEFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RTKLEFoundation.framework; sourceTree = "<group>"; };
-		BECD5C7D2D64789C002E1EE5 /* RTKOTASDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RTKOTASDK.framework; sourceTree = "<group>"; };
 		C1307D9B2FB124A1705BD15B /* Pods-JWBleDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-JWBleDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-JWBleDemo/Pods-JWBleDemo.release.xcconfig"; sourceTree = "<group>"; };
 		E21BA8EC2420C3C000D58E28 /* OTARecordModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OTARecordModel.h; sourceTree = "<group>"; };
 		E21BA8ED2420C3C000D58E28 /* OTARecordModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OTARecordModel.m; sourceTree = "<group>"; };
@@ -431,10 +423,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BECD5C7E2D64789C002E1EE5 /* CocoaLumberjack.framework in Frameworks */,
-				BECD5C7F2D64789C002E1EE5 /* RTKLEFoundation.framework in Frameworks */,
-				BECD5C802D64789C002E1EE5 /* RTKOTASDK.framework in Frameworks */,
-				BECD5C812D64789C002E1EE5 /* RTKAudioConnectSDK.framework in Frameworks */,
 				FCDD64B792C45C2DF324E2B4 /* libPods-JWBleDemo.a in Frameworks */,
+				BE1D280E2FC68B8500C6D10F /* RTKLEFoundation.xcframework in Frameworks */,
+				BE1D280F2FC68B8500C6D10F /* RTKOTASDK.xcframework in Frameworks */,
 				159095A22C7431A70059AECA /* JWBle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -445,10 +436,9 @@
 		1505C70F2C73451B008AA363 /* JWBle */ = {
 			isa = PBXGroup;
 			children = (
+				BE1D280C2FC68B8500C6D10F /* RTKLEFoundation.xcframework */,
+				BE1D280D2FC68B8500C6D10F /* RTKOTASDK.xcframework */,
 				BECD5C7A2D64789C002E1EE5 /* CocoaLumberjack.framework */,
-				BECD5C7B2D64789C002E1EE5 /* RTKAudioConnectSDK.framework */,
-				BECD5C7C2D64789C002E1EE5 /* RTKLEFoundation.framework */,
-				BECD5C7D2D64789C002E1EE5 /* RTKOTASDK.framework */,
 				159095A12C7431A70059AECA /* JWBle.framework */,
 			);
 			path = JWBle;
@@ -1623,7 +1613,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4B4VBYZR42;
+				DEVELOPMENT_TEAM = VCXD7HFPX6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1665,7 +1655,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 4B4VBYZR42;
+				DEVELOPMENT_TEAM = VCXD7HFPX6;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

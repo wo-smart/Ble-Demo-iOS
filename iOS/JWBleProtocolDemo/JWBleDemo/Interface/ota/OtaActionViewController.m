@@ -66,7 +66,7 @@
     
     NSData *data = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@",basePath,fileName]]];
     if (isCommon) {
-        [[JWBleOTAAction shareInstance] startOTAWithData:data callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
+        [[JWBleOTAAction shareInstance] startOTAV2ForWithData:data prefersUpgradeUsingOTAMode:isCommon callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
             
             if (deviceDFUStatus == JWBleDeviceDFUStatus_FileNotExist) {
                 
@@ -81,7 +81,7 @@
             }
         }];
     } else {
-        [[JWBleOTAAction shareInstance] startImageOTAWithData:data callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
+        [[JWBleOTAAction shareInstance] startOTAV2ForWithData:data prefersUpgradeUsingOTAMode:isCommon callBack:^(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus) {
             
             if (deviceDFUStatus == JWBleDeviceDFUStatus_FileNotExist) {
                 

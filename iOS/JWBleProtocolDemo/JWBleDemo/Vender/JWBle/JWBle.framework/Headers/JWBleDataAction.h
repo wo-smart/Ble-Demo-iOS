@@ -471,6 +471,35 @@
 + (void)jwGetHrMovementDataByStartT:(NSInteger)startT endT:(NSInteger)endT callBack:(void (^)(NSArray *dataArr))callBack;
 
 /**
+ Get device UV data
+   The date obtained by @param yyyymmddStr such as: 20180911
+   @param callBack
+   dataArr:
+   [
+      {
+        ....
+      }
+   ]
+ */
++ (void)jwGetUVDataByYYYYDDStr:(NSString *)yyyymmddStr callBack:(void (^)(NSArray *dataArr))callBack;
++ (void)jwGetUVDataByStartT:(NSInteger)startT endT:(NSInteger)endT callBack:(void (^)(NSArray *dataArr))callBack;
+
+
+/**
+ Get device Stress data
+   The date obtained by @param yyyymmddStr such as: 20180911
+   @param callBack
+   dataArr:
+   [
+      {
+        ....
+      }
+   ]
+ */
++ (void)jwGetStressDataByYYYYDDStr:(NSString *)yyyymmddStr callBack:(void (^)(NSArray *dataArr))callBack;
++ (void)jwGetStressDataByStartT:(NSInteger)startT endT:(NSInteger)endT callBack:(void (^)(NSArray *dataArr))callBack;
+
+/**
  Get device HrvRmssd data
    The date obtained by @param yyyymmddStr such as: 20180911
    @param callBack

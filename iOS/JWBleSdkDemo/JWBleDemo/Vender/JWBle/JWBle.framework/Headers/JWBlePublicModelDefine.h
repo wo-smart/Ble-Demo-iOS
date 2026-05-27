@@ -11,6 +11,7 @@
 
 #import "JWBleAlarmClockModel.h"
 #import "JWBleMedicationReminderModel.h"
+#import "JWBleHeatStressReminderModel.h"
 #import "JWNotDisturbModel.h"
 #import "JWCountDownModel.h"
 

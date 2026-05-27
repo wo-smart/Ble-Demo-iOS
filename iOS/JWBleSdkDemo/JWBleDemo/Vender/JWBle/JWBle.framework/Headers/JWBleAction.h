@@ -36,6 +36,7 @@
  */
 + (void)jwDisConnect;
 
+
 /**
  刷新设备功能列表 Refresh device function list
  */
@@ -844,6 +845,18 @@
 + (void)jwMedicationReminderAction:(BOOL)get
              alarmArr:(NSArray<JWBleMedicationReminderModel *> *)alarmArr
              callBack:(JWBleMedicationReminderActionCallBack)callBack;
+
+/**
+ 热应激提醒
+ 
+ @param get  是否获取
+ @param model 提醒model（如果设置）
+ @param callBack 回调
+ */
++ (void)jwHeatStressReminderAction:(BOOL)get
+                             model:(JWBleHeatStressReminderModel *)model
+                          callBack:(void (^)(JWBleCommunicationStatus status, JWBleHeatStressReminderModel *model))callBack;
+
 /**
  女性健康设置
      open: 开启/关闭
@@ -932,6 +945,8 @@
 + (void)jwBloodFatContinuesMonitoringAction:(BOOL)get open:(BOOL)open callBack:(void (^)(JWBleCommunicationStatus status, BOOL open))callBack;
 + (void)jwBloodFatContinuesMonitoringPrivateAction:(BOOL)get open:(BOOL)open value:(int)value callBack:(void (^)(JWBleCommunicationStatus status, BOOL open, int value))callBack;
 
++ (void)jwStressContinuesMonitoringAction:(BOOL)get open:(BOOL)open callBack:(void (^)(JWBleCommunicationStatus status, BOOL open))callBack;
++ (void)jwSyncStressContinuesMonitoringDataWithBlock:(void (^)(JWBleCommunicationStatus state, NSArray* resultData))callBack;
 + (void)jwCommonMeasurementAction:(JWBleCommonMeasurementEnum)actionEnum start:(BOOL)start;
 
 /**
@@ -1063,6 +1078,21 @@
 //默认功能设置  Default function settings
 + (void)jwDefaultFunctionSettings:(BOOL)bpOpen temperatureOpen:(BOOL)temperatureOpen pressureOpen:(BOOL)pressureOpen sceneControl:(BOOL)sceneControl alexa:(BOOL)alexa light:(BOOL)light;
 + (void)jwGetDefaultFunctionSettings:(void (^)(JWBleCommunicationStatus status, BOOL bpOpen, BOOL temperatureOpen, BOOL pressureOpen, BOOL sceneControl, BOOL alexa,BOOL light))callBack;
+
+
+/// 默认功能设置  Default function settings
+/// - Parameters:
+///   - bpOpen: 血压功能
+///   - temperatureOpen: 温度功能
+///   - pressureOpen: 压力功能
+///   - sceneControl: 场景控制功能
+///   - alexa: Alexa功能
+///   - light: 光感功能
+///   - agingMode: 老化信息展示功能
++ (void)jwDefaultFunctionSettings:(BOOL)bpOpen temperatureOpen:(BOOL)temperatureOpen pressureOpen:(BOOL)pressureOpen sceneControl:(BOOL)sceneControl alexa:(BOOL)alexa light:(BOOL)light agingMode:(BOOL)agingMode;
+
++ (void)jwGetDefaultFunctionSettingsWithAgingMode:(void (^)(JWBleCommunicationStatus status, BOOL bpOpen, BOOL temperatureOpen, BOOL pressureOpen, BOOL sceneControl, BOOL alexa,BOOL light,BOOL agingMode))callBack;
+
 
 //生产测试结束  End of production test
 + (void)jwProduceEnd:(void (^)(JWBleCommunicationStatus status))callBack;
@@ -1211,6 +1241,32 @@
  */
 + (void)jwGetDebugShowWithCallBack:(void (^)(JWBleCommunicationStatus status, NSData *data))callBack;
 
+// 设置手环进入老化模式
++ (void)jwSettingDeviceLaohuaWithCallBack:(void (^)(JWBleCommunicationStatus status, BOOL success ,int state))callBack;
+
+/**
+ 获取健康功能开关配置
+ */
+
++(void)jwGetHealthFunctionBloodGlucoseWithcallBack:(void (^)(JWBleCommunicationStatus status, BOOL Open))callBack;
+
++(void)jwSetHealthFunctionBloodGlucoseOpen:(BOOL)open withCallBack:(void (^)(JWBleCommunicationStatus status))callBack;
+
++(void)jwGetHealthFunctionBloodFatWithCallBack:(void (^)(JWBleCommunicationStatus status, BOOL Open))callBack;
+
++(void)jwSetHealthFunctionBloodFatOpen:(BOOL)open withCallBack:(void (^)(JWBleCommunicationStatus status))callBack;
+
++(void)jwGetHealthFunctionUricAcidWithCallBack:(void (^)(JWBleCommunicationStatus status, BOOL Open))callBack;
+
++(void)jwSetHealthFunctionUricAcidOpen:(BOOL)open withCallBack:(void (^)(JWBleCommunicationStatus status))callBack;
+
++(void)jwGetHealthFunctionWithCallBack:(void (^)(JWBleCommunicationStatus status, BOOL bloodGlucoseOpen, BOOL bloodFatOpen, BOOL uricAcidOpen))callBack;
+// 设置健康功能开关（隐藏 = YES，显示 = NO）
+- (void)jwSetHealthFunctionWithBloodGlucoseOpen:(BOOL)bloodGlucoseOpen
+                                  bloodFatOpen:(BOOL)bloodFatOpen
+                                   uricAcidOpen:(BOOL)uricAcidOpen withCallBack:(void (^)(JWBleCommunicationStatus status))callBack;
+
++(void)jwHotNotificationWithType:(int)type CallBack:(void (^)(JWBleCommunicationStatus status))callBack;
 
 @end
 

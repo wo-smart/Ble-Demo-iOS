@@ -12,6 +12,7 @@
 #import "JWBleMedicationReminderModel.h"
 #import "JWBleWeatherModel.h"
 #import "JWNotDisturbModel.h"
+#import "JWBleHeatStressReminderModel.h"
 #import "JWCountDownModel.h"
 #import "JWOxygenModel.h"
 
@@ -154,32 +155,30 @@ typedef NS_ENUM(NSInteger, JWUricAcidEvaluationResultEnum) {
 #pragma mark - 功能枚举 Function enumeration
 //手环运动枚举 Bracelet sports enumeration
 typedef NS_ENUM (NSInteger, JWBleDeviceMotionEnum) {
-    JWBleDeviceMotionEnum_Run = 0,
-    JWBleDeviceMotionEnum_Climb,
-    JWBleDeviceMotionEnum_Football,
-    JWBleDeviceMotionEnum_Cycle,
-    JWBleDeviceMotionEnum_Rope,
-    JWBleDeviceMotionEnum_RunOutDoor,
-    JWBleDeviceMotionEnum_RideOutDoor,
-    JWBleDeviceMotionEnum_WalkOutDoor,
-    JWBleDeviceMotionEnum_RunInDoor,
-    JWBleDeviceMotionEnum_FreeTrain,
-    JWBleDeviceMotionEnum_Plank,
-    
-    JWBleDeviceMotionEnum_Walk,
-    JWBleDeviceMotionEnum_Pranayama,
-    JWBleDeviceMotionEnum_Yoga,
-    JWBleDeviceMotionEnum_Hiking,
-    JWBleDeviceMotionEnum_Spinning,
-    JWBleDeviceMotionEnum_Rowing,
-    JWBleDeviceMotionEnum_Stepper,
-    JWBleDeviceMotionEnum_Elliptical,
-    
-    JWBleDeviceMotionEnum_Basketball,
-    JWBleDeviceMotionEnum_Tennis,
-    JWBleDeviceMotionEnum_Badminton,
-    JWBleDeviceMotionEnum_Baseball,
-    JWBleDeviceMotionEnum_Rugby,
+    JWBleDeviceMotionEnum_Run = 0,//跑步
+    JWBleDeviceMotionEnum_Climb,//攀爬
+    JWBleDeviceMotionEnum_Football,//足球
+    JWBleDeviceMotionEnum_Cycle,//骑自行车
+    JWBleDeviceMotionEnum_Rope,//绳索
+    JWBleDeviceMotionEnum_RunOutDoor,//户外跑步
+    JWBleDeviceMotionEnum_RideOutDoor,//户外骑行
+    JWBleDeviceMotionEnum_WalkOutDoor,//户外散步
+    JWBleDeviceMotionEnum_RunInDoor,//室内跑步
+    JWBleDeviceMotionEnum_FreeTrain,//自由训练
+    JWBleDeviceMotionEnum_Plank,//平板支撑
+    JWBleDeviceMotionEnum_Walk,//散步
+    JWBleDeviceMotionEnum_Pranayama,//调息
+    JWBleDeviceMotionEnum_Yoga,//瑜伽
+    JWBleDeviceMotionEnum_Hiking,//徒步
+    JWBleDeviceMotionEnum_Spinning,//动感单车
+    JWBleDeviceMotionEnum_Rowing,//划船
+    JWBleDeviceMotionEnum_Stepper,//踏步机
+    JWBleDeviceMotionEnum_Elliptical,//椭圆机
+    JWBleDeviceMotionEnum_Basketball,//篮球
+    JWBleDeviceMotionEnum_Tennis,//网球
+    JWBleDeviceMotionEnum_Badminton,//羽毛球
+    JWBleDeviceMotionEnum_Baseball,//棒球
+    JWBleDeviceMotionEnum_Rugby,//橄榄球
 };
 
 //实时数据枚举 Real-time data enumeration
@@ -260,8 +259,13 @@ typedef NS_ENUM (NSInteger, JWBleFunctionEnum) {
     JWBleFunctionEnum_DialDateFormat = 41, // 表盘日期格式 Dial date format
     JWBleFunctionEnum_ECGHidden_HRV_QT = 40, // ecg不显示qt和hrv
     
-    JWBleFunctionEnum_Belt = 39,
+    JWBleFunctionEnum_Belt = 39,//ECG Belt
     
+    JWBleFunctionEnum_Health_Hidden = 38,//健康功能隐藏 Health function hidden
+    
+    JWBleFunctionEnum_Stress = 37,//压力自动监测功能 Automatic Stress monitoring function
+    JWBleFunctionEnum_HeatStress = 36,//热应激 Automatic Stress monitoring function
+
 #pragma mark - Device Function 2
     JWBleFunctionEnum_DevicePrivateBloodPressure = 10001, // 设备私人血压  Device private blood pressure
     JWBleFunctionEnum_SOS = 10002, // sos
@@ -278,6 +282,7 @@ typedef NS_ENUM (NSInteger, JWBleFunctionEnum) {
     JWBleFunctionEnum_BloodFat_ContinuesMonitoring_Private = 10013,  // 血脂，持续监测，私人模式
     JWBleFunctionEnum_BodyFat = 10014,  // 体脂
     JWBleFunctionEnum_MicroPhysicalExamination = 10015, // 微体检 Micro physical examination
+    JWBleFunctionEnum_UV = 10016, // 紫外线 UV
 };
 
 //客户功能枚举 Custom Function enumeration
@@ -373,6 +378,7 @@ typedef NS_ENUM (NSInteger, JWBleLanguageEnum) {
     JWBleLanguageEnum_Mongolian = 53,
     JWBleLanguageEnum_Vietnamese = 102,
     JWBleLanguageEnum_Dutch = 31,
+    JWBleLanguageEnum_Thai = 81,
 };
 
 //运动操作枚举 Motion enumeration
@@ -458,6 +464,7 @@ typedef NS_ENUM (NSInteger, JWDeleteDataType) {
     JWDeleteDataType_UricAcidContinuousMonitoring,
     JWDeleteDataType_BodyFat,
     JWDeleteDataType_MicroPhysicalExamination,
+    JWDeleteDataType_UV,
 };
 
 //通用点测状态回调

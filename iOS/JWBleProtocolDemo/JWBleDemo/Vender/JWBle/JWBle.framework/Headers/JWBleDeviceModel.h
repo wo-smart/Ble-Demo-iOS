@@ -173,6 +173,9 @@ NS_ASSUME_NONNULL_BEGIN
 //客户定制功能支持 Customer customized function support
 @property(nonatomic, strong) NSDictionary *customizedFunctionDic;
 
+// 原始设备信息 RTK DeviceData
+@property(nonatomic, strong) NSData* DeviceInfoData;
+
 @end
 
 NS_ASSUME_NONNULL_END

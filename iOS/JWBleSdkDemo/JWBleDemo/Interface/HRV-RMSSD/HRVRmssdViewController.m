@@ -44,6 +44,20 @@
     }];
 }
 
+- (IBAction)clickSetBtn3:(id)sender {
+    __weak __typeof(self)weakSelf = self;
+    [JWBleAction jwCustomHrvRmssdAction:false timeInterval:10 callBack:^(JWBleCommunicationStatus status, int timeInterval) {
+        [weakSelf.view makeToast:[NSString stringWithFormat:@"timeInterval : %d",timeInterval]];
+    }];
+}
+
+- (IBAction)clickSetBtn4:(id)sender {
+    __weak __typeof(self)weakSelf = self;
+    [JWBleAction jwCustomHrvRmssdAction:false timeInterval:15 callBack:^(JWBleCommunicationStatus status, int timeInterval) {
+        [weakSelf.view makeToast:[NSString stringWithFormat:@"timeInterval : %d",timeInterval]];
+    }];
+}
+
 - (IBAction)clickGetData:(id)sender {
 
     [JWBleAction jwDeviceDataReset];

@@ -24,6 +24,8 @@
 #import "JWLogModel.h"
 #import "JWBleDBModel.h"
 #import "JWBleMyMainInterfaceAction.h"
+#import "JWBleMotionStatusModel.h"
+#import "JWBleMotionRealtimeDataModel.h"
 
 //! Project version number for JWBle.
 FOUNDATION_EXPORT double JWBleVersionNumber;
@@ -32,5 +34,4 @@ FOUNDATION_EXPORT double JWBleVersionNumber;
 FOUNDATION_EXPORT const unsigned char JWBleVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <JWBle/PublicHeader.h>
-
 

@@ -76,8 +76,36 @@
                         <action selector="clickGetData:" destination="-1" eventType="touchUpInside" id="E3L-MO-mJh"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b10-hv-rm1">
+                    <rect key="frame" x="96.666666666666686" y="359" width="200" height="50"/>
+                    <color key="backgroundColor" systemColor="systemBlueColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="h10-hv-rm1"/>
+                        <constraint firstAttribute="width" constant="200" id="w10-hv-rm1"/>
+                    </constraints>
+                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Set 10 TimeInterval"/>
+                    <connections>
+                        <action selector="clickSetBtn3:" destination="-1" eventType="touchUpInside" id="a10-hv-rm1"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b15-hv-rm2">
+                    <rect key="frame" x="96.666666666666686" y="429" width="200" height="50"/>
+                    <color key="backgroundColor" systemColor="systemBlueColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="h15-hv-rm2"/>
+                        <constraint firstAttribute="width" constant="200" id="w15-hv-rm2"/>
+                    </constraints>
+                    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Set 15 TimeInterval"/>
+                    <connections>
+                        <action selector="clickSetBtn4:" destination="-1" eventType="touchUpInside" id="a15-hv-rm2"/>
+                    </connections>
+                </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Sla-54-89J">
-                    <rect key="frame" x="20" y="359" width="393" height="0.0"/>
+                    <rect key="frame" x="20" y="499" width="393" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -87,7 +115,11 @@
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="pnN-YM-KVD" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="21a-hd-eWv"/>
-                <constraint firstItem="Sla-54-89J" firstAttribute="top" secondItem="3yb-Hz-24E" secondAttribute="bottom" constant="20" id="Ceu-mK-uyf"/>
+                <constraint firstItem="b10-hv-rm1" firstAttribute="top" secondItem="3yb-Hz-24E" secondAttribute="bottom" constant="20" id="tp10-hv-rm1"/>
+                <constraint firstItem="b10-hv-rm1" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="cx10-hv-rm1"/>
+                <constraint firstItem="b15-hv-rm2" firstAttribute="top" secondItem="b10-hv-rm1" secondAttribute="bottom" constant="20" id="tp15-hv-rm2"/>
+                <constraint firstItem="b15-hv-rm2" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="cx15-hv-rm2"/>
+                <constraint firstItem="Sla-54-89J" firstAttribute="top" secondItem="b15-hv-rm2" secondAttribute="bottom" constant="20" id="Ceu-mK-uyf"/>
                 <constraint firstItem="Iou-oc-cAn" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="FYn-qJ-UCx"/>
                 <constraint firstItem="Sla-54-89J" firstAttribute="trailing" secondItem="Q5M-cg-NOt" secondAttribute="trailing" constant="20" id="LfL-FR-Day"/>
                 <constraint firstItem="6la-fe-bdA" firstAttribute="top" secondItem="pnN-YM-KVD" secondAttribute="bottom" constant="20" id="UT8-4j-5x3"/>

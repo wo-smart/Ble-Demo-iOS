@@ -20,6 +20,22 @@
 + (void)jwStartScanDeviceWithCallBack:(JWBleReceiveScanningDeviceCallBack)callBack;
 
 /**
+ 开始扫描设备（带超时，超时后自动停止扫描）
+ 
+ 说明：与 jwStartScanDeviceWithCallBack: 相比，多了自动停止能力，避免忘记调用
+ jwStopScanDevice 造成长时间扫描耗电。
+ 
+ @param timeout 超时时间（秒），建议 10~30；<= 0 表示不超时（等价于 jwStartScanDeviceWithCallBack:）
+ @param callBack 扫描设备回调
+ 
+ Start scanning device with timeout
+ 
+ @param timeout timeout in seconds
+ @param callBack scanning device callback
+ */
++ (void)jwStartScanDeviceWithTimeout:(NSTimeInterval)timeout callBack:(JWBleReceiveScanningDeviceCallBack)callBack;
+
+/**
  停止扫描 Stop scanning
  */
 + (void)jwStopScanDevice;
@@ -39,6 +55,11 @@
 
 /**
  刷新设备功能列表 Refresh device function list
+ 
+ 注意：本接口没有方法内回调，刷新结果会在设备回包后更新到
+ JWBleManager.connectionModel.functionData / functionDataV2；
+ 若需要确认刷新完成，可监听 JWBleManager.connectStateChangeCallBack 的
+ JWBleDeviceConnectStatus_SyncSuccess，或刷新后重新调用 jwCheckFunctionStates:。
  */
 + (void)sysDeviceFuncAction;
 
@@ -181,10 +202,11 @@
               callBack:(JWBleCommonFuctionReceiveCallBack)callBack;
 
 /**
- 亮屏控制功能 Bright screen control function
+亮屏控制功能 Bright screen control function
  
  @param isGet 是否获取 Whether to get
- @param timeLength 亮屏时长 3~30秒 Bright screen duration 3~30 seconds
+ @param timeLength 亮屏时长 3~30秒（部分固件支持到 60 秒，请以设备实报为准）
+        Bright screen duration 3~30 seconds (some firmwares support up to 60s; use the device-reported value)
  @param callBack 回调 Callback
  */
 + (void)jwbBrightScreenDuration:(BOOL)isGet
@@ -280,7 +302,15 @@
             callBack:(JWBleTestTemperatureCallBack)callBack;
 
 /**
- 检查功能状态 Check function status
+检查功能状态 Check function status
+ 
+ 前置条件：设备已完成同步（JWBleDeviceConnectStatus_SyncSuccess）。
+ 该接口只读缓存，不发起通信；未同步时统一返回“不支持”。
+ 
+ 判定建议：支持用 `!= JWBleFunctionStateEnum_NotSupport`，开启用 `== JWBleFunctionStateEnum_Open`；
+ 不要用 `== 0` 或 `== Close` 判定（部分设备走位图模式，永远不会返回 Close）。
+ 
+ Precondition: the device must have finished syncing (SyncSuccess).
  
  @param functionEnum 功能枚举  Function enumeration
  @return return 功能状态枚举  Functional state enumeration
@@ -416,6 +446,24 @@
 ///         14：徒步
 ///
 + (void)jwRealTimeHeartRateAction:(BOOL)open sprotType:(int)sportType callBack:(JWRealTimeHeartRateActionCallBack)callBack;
+
+/// 查询设备当前多运动状态。
++ (void)jwQueryDeviceMotionStatus:(JWBleDeviceMotionControlCallBack)callBack;
+
+/// 查询设备支持的多运动类型。设备不支持多运动功能时成功返回空数组。
++ (void)jwQuerySupportedDeviceMotionTypes:(JWBleDeviceMotionTypeListCallBack)callBack;
+
+/// 开始设备多运动。
++ (void)jwStartDeviceMotion:(JWBleDeviceMotionEnum)motionType callBack:(JWBleDeviceMotionControlCallBack)callBack;
+
+/// 暂停设备多运动。
++ (void)jwPauseDeviceMotion:(JWBleDeviceMotionControlCallBack)callBack;
+
+/// 恢复设备多运动。
++ (void)jwResumeDeviceMotion:(JWBleDeviceMotionControlCallBack)callBack;
+
+/// 结束设备多运动。
++ (void)jwStopDeviceMotion:(JWBleDeviceMotionControlCallBack)callBack;
 
 /// 手环功能显示与隐藏的操作  Bracelet function display and hidden operation
 /// @param isGet 是否获取
@@ -892,7 +940,7 @@
  尿酸评估
     @param get  是否获取
     @param open 是否开启（get = false 生效）
-    @param privateValue 私人值（get = false 生效）【男性：238~356 μmol/L】【女性：178~297 μmol/L】，设备默认值为0
+    @param privateValue 私人值（get = false 生效）【尿酸：μmol/L，男性 238~356、女性 178~297】，设备默认值为0
     @param privateRtc 设置私人值时间（get = false 生效），设备默认值为0，精确到秒
     @param callBack 回调
  
@@ -909,7 +957,7 @@
  血脂评估
     @param get  是否获取
     @param open 是否开启（get = false 生效）
-    @param privateValue 私人值（get = false 生效）【男性：238~356 μmol/L】【女性：178~297 μmol/L】，设备默认值为0
+    @param privateValue 私人值（get = false 生效）【血脂：单位与范围以设备协议为准，参考值同尿酸 μmol/L】，设备默认值为0
     @param privateRtc 设置私人值时间（get = false 生效），设备默认值为0，精确到秒
     @param callBack 回调
  
@@ -926,7 +974,7 @@
  周期血糖评估
     @param get  是否获取
     @param open 是否开启（get = false 生效）
-    @param privateValue 私人值（get = false 生效）【男性：238~356 μmol/L】【女性：178~297 μmol/L】，设备默认值为0
+    @param privateValue 私人值（get = false 生效）【周期血糖：mmol/L ×10（如 7.5 传 75）或 mg/dL，取决于 JWUserPreferenceType】，设备默认值为0
     @param privateRtc 设置私人值时间（get = false 生效），设备默认值为0，精确到秒
     @param callBack 回调
  
@@ -952,12 +1000,30 @@
 /**
  getDeviceBattery 获取设备当前电量
  
+ 注意：本接口没有方法内回调，电量通过以下方式获取：
+   1) JWBleManager.connectStateChangeCallBack 收到 JWBleDeviceConnectStatus_BatteryUpdate 后读 connectionModel.power；
+   2) 或直接使用 jwGetDeviceCurrentBatteryWithCallBack:（推荐）。
+ 
  JWBleManager.JWBleConnectStatusChangeCallBack 
  if (deviceConnectStatus == JWBleDeviceConnectStatus_BatteryUpdate) {
      NSLog(@"Battery：%d",JWBleManager.connectionModel.power);
  }
  */
 + (void)jwGetDeviceCurrentBattery;
+
+/**
+ 获取设备当前电量（带回调）
+ 
+ 说明：注册一次即可，设备每次上报电量（含主动查询与电量变化）都会回调。
+ 等价于设置 JWBleManager.getPowerCallBack 后调用 jwGetDeviceCurrentBattery。
+ 
+ @param callBack 回调：status 通信状态、power 电量（百分比）、charging 是否充电中
+ 
+ Get device current battery with callback
+ 
+ @param callBack status, power(%), charging
+ */
++ (void)jwGetDeviceCurrentBatteryWithCallBack:(JWBleGetPowerCallBack)callBack;
 
 #pragma mark - 客户定制  Customer customization
 
@@ -1093,6 +1159,11 @@
 
 + (void)jwGetDefaultFunctionSettingsWithAgingMode:(void (^)(JWBleCommunicationStatus status, BOOL bpOpen, BOOL temperatureOpen, BOOL pressureOpen, BOOL sceneControl, BOOL alexa,BOOL light,BOOL agingMode))callBack;
 
+/// 默认功能设置，包含热应激开关。热应激在协议中使用反向关闭位。
++ (void)jwDefaultFunctionSettings:(BOOL)bpOpen temperatureOpen:(BOOL)temperatureOpen pressureOpen:(BOOL)pressureOpen sceneControl:(BOOL)sceneControl alexa:(BOOL)alexa light:(BOOL)light agingMode:(BOOL)agingMode heatStressOpen:(BOOL)heatStressOpen;
+
++ (void)jwGetDefaultFunctionSettingsWithHeatStress:(void (^)(JWBleCommunicationStatus status, BOOL bpOpen, BOOL temperatureOpen, BOOL pressureOpen, BOOL sceneControl, BOOL alexa, BOOL light, BOOL agingMode, BOOL heatStressOpen))callBack;
+
 
 //生产测试结束  End of production test
 + (void)jwProduceEnd:(void (^)(JWBleCommunicationStatus status))callBack;
@@ -1125,7 +1196,6 @@
 ///
 /// Get the current uid of the bracelet
 /// @param callBack uid
-//+ (void)jwGetDeviceUid:(void (^)(JWBleCommunicationStatus status, NSString *uid))callBack;
 
 /// 获取设备的SN ID
 /// @param callBack callBack description
@@ -1181,7 +1251,6 @@
 
 //获取生产测试功能
 //Get production test capabilities
-//+ (void)jwGetFactoryFunctionWithCallBack222:(JwFactoryFunctionCallBack)callBack;
 
 //打开、关闭 手环TP功能
 + (void)jwUpdateTpModel:(BOOL)open callBack:(void (^)(JWBleCommunicationStatus status, int x, int y))callBack;
@@ -1266,7 +1335,12 @@
                                   bloodFatOpen:(BOOL)bloodFatOpen
                                    uricAcidOpen:(BOOL)uricAcidOpen withCallBack:(void (^)(JWBleCommunicationStatus status))callBack;
 
+// 设置健康功能开关（隐藏 = YES，显示 = NO）
+// 推荐使用本类方法；上方实例方法仅为兼容保留（JWBleAction 无单例，实例方法无法通过公开途径调用）
++ (void)jwSetHealthFunctionWithBloodGlucoseOpen:(BOOL)bloodGlucoseOpen
+                                   bloodFatOpen:(BOOL)bloodFatOpen
+                                    uricAcidOpen:(BOOL)uricAcidOpen withCallBack:(void (^)(JWBleCommunicationStatus status))callBack;
+
 +(void)jwHotNotificationWithType:(int)type CallBack:(void (^)(JWBleCommunicationStatus status))callBack;
 
 @end
-

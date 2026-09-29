@@ -1,7 +1,6 @@
-
-
 | Version |                         Description                          |
 | :-----: | :----------------------------------------------------------: |
 |  1.0.0  |                   official release version                   |
 |  1.0.1  | Support sleep quality calculation<br />[JWBleDataAction jwSleepQualityCalculation:] |
 |  1.0.2  |                 Add step target setting log                  |
+|  1.3.2  | Unified SDK version (`sdkInfo` / `Info.plist` / this file).<br /><br />**Added**: unified error codes (`JWBleErrorCode` 45 values, `JWBleErrorDomain`, status mappings, NSError helpers, `JWBleManager.lastErrorCode`, OTA failure reason via `JWBleOTAAction.lastError*`); `[JWBleAction jwStartScanDeviceWithTimeout:callBack:]`; `[JWBleAction jwGetDeviceCurrentBatteryWithCallBack:]`; class method `[JWBleAction jwSetHealthFunctionWithBloodGlucoseOpen:bloodFatOpen:uricAcidOpen:withCallBack:]`.<br /><br />**Fixed**: HRV range query returned SpO2 data and deleted SpO2 rows; step gap values were `NSString` instead of `NSNumber`; history getters deleted duplicate rows; 35 read paths stayed silent when the device failed; 15 error branches passed a test-status enum as `BOOL`; `jwDeviceFunctionShowOrHiddenAction:setDic:callBack:` was a no-op.<br /><br />**Changed**: `isConnected` / `isConnecing` are `readonly`; `cacheLogArr` moved to the private header; full-width `－ObjC` linker flag corrected to `-ObjC`; unused callbacks and `JWBleMotionActionEnum` marked `API_DEPRECATED`; header comments corrected (units, preconditions, `functionData` dual encoding, field availability). |

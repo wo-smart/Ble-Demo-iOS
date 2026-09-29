@@ -16,6 +16,9 @@
 #import "JWCountDownModel.h"
 #import "JWOxygenModel.h"
 
+@class JWBleMotionStatusModel;
+@class JWBleMotionRealtimeDataModel;
+
 #pragma mark - 状态枚举 State enumeration
 //蓝牙连接状态枚举 Bluetooth connection status enumeration
 typedef NS_ENUM (NSInteger, JWBleDeviceConnectStatus) {
@@ -38,6 +41,14 @@ typedef NS_ENUM (NSInteger, JWBleDeviceConnectStatus) {
 };
 
 //通信的通用状态 General status of communication
+//说明：
+//  1) 写类接口（设置类）多以 Success 表示“指令已下发”，不代表设备已执行；
+//     读取类接口（isGet == YES）的 Success 才是设备真实应答结果。
+//  2) 如需确认设备执行结果，请使用带读取能力的接口或对应的设备回包回调。
+//Note:
+//  1) For setter APIs, Success means "command sent"; for getter APIs (isGet == YES)
+//     it means the device responded successfully.
+//  2) No unified error code exists; failures are expressed by these statuses.
 typedef NS_ENUM (NSInteger, JWBleCommunicationStatus) {
     JWBleCommunicationStatus_Faild = 0,//通信 失败  Communication failed
     JWBleCommunicationStatus_Success = 1,//通信 成功 Communication success
@@ -87,6 +98,7 @@ typedef NS_ENUM(NSInteger, JWBleDeviceDFUStatus) {
     JWBleDeviceDFUStatus_Success,//升级成功 update successed
     JWBleDeviceDFUStatus_Failure,//升级失败 Upgrade failed
     JWBleDeviceDFUStatus_PeripheralIsNull,//设备为null Device is null
+    JWBleDeviceDFUStatus_VersionConsistent,//版本一致，无需升级 The version is consistent and no upgrade is required
 };
 
 //测试心率状态 Test heart rate status
@@ -108,8 +120,8 @@ typedef NS_ENUM(NSInteger, JWBleTestBPStatus) {
 
 //测试温度状态 Test temperature status
 typedef NS_ENUM(NSInteger, JWBleTestTemperatureStatus) {
-    JWBleTestTemperatureStatus_TestEnd = 0,//实时心率上传功能关闭返回 Real-time heart rate upload function closed and returned
-    JWBleTestTemperatureStatus_DeviceResponse = 1,//实时心率上传功能开启返回 Real-time heart rate upload function turned on
+    JWBleTestTemperatureStatus_TestEnd = 0,//测试结束返回（原注释为心率语义，温度场景含义待确认） Test end
+    JWBleTestTemperatureStatus_DeviceResponse = 1,//设备响应返回（原注释为心率语义，温度场景含义待确认） Device response
     JWBleTestTemperatureStatus_NotOpen = 2,//手环设备连续心率没有开启，温度数据监测功能不开启 The continuous heart rate of the bracelet device is not turned on, and the temperature data monitoring function is not turned on
     JWBleTestTemperatureStatus_Open = 3,//手环设备连续心率已经开启，温度监测功能可以开启 The continuous heart rate of the bracelet device has been turned on, and the temperature monitoring function can be turned on
     JWBleTestTemperatureStatus_BUSY = 4,//手环设备连续心率已经开启，但是因为设备正在忙碌状态，温度数据监测功能不开启 The continuous heart rate of the bracelet device has been turned on, but the temperature data monitoring function is not turned on because the device is busy
@@ -155,6 +167,7 @@ typedef NS_ENUM(NSInteger, JWUricAcidEvaluationResultEnum) {
 #pragma mark - 功能枚举 Function enumeration
 //手环运动枚举 Bracelet sports enumeration
 typedef NS_ENUM (NSInteger, JWBleDeviceMotionEnum) {
+    JWBleDeviceMotionEnum_Unknown = -1,
     JWBleDeviceMotionEnum_Run = 0,//跑步
     JWBleDeviceMotionEnum_Climb,//攀爬
     JWBleDeviceMotionEnum_Football,//足球
@@ -179,6 +192,32 @@ typedef NS_ENUM (NSInteger, JWBleDeviceMotionEnum) {
     JWBleDeviceMotionEnum_Badminton,//羽毛球
     JWBleDeviceMotionEnum_Baseball,//棒球
     JWBleDeviceMotionEnum_Rugby,//橄榄球
+    JWBleDeviceMotionEnum_PingPong = 0x18,//乒乓球
+    JWBleDeviceMotionEnum_Skiing = 0x19,//滑雪
+    JWBleDeviceMotionEnum_Cricket = 0x1A,//板球
+    JWBleDeviceMotionEnum_StrengthTraining = 0x1B,//力量训练
+};
+
+typedef NS_ENUM (NSInteger, JWBleDeviceMotionControlAction) {
+    JWBleDeviceMotionControlActionQuery = 0x00,
+    JWBleDeviceMotionControlActionStart = 0x01,
+    JWBleDeviceMotionControlActionPause = 0x02,
+    JWBleDeviceMotionControlActionResume = 0x03,
+    JWBleDeviceMotionControlActionStop = 0x04,
+};
+
+typedef NS_ENUM (NSInteger, JWBleDeviceMotionResult) {
+    JWBleDeviceMotionResultSuccess = 0x00,
+    JWBleDeviceMotionResultAlreadyInTargetState = 0x01,
+    JWBleDeviceMotionResultUnsupportedType = 0x02,
+    JWBleDeviceMotionResultInvalidState = 0x03,
+    JWBleDeviceMotionResultLowBattery = 0x04,
+};
+
+typedef NS_ENUM (NSInteger, JWBleDeviceMotionState) {
+    JWBleDeviceMotionStateIdle = 0x00,
+    JWBleDeviceMotionStateRunning = 0x01,
+    JWBleDeviceMotionStatePaused = 0x02,
 };
 
 //实时数据枚举 Real-time data enumeration
@@ -189,10 +228,17 @@ typedef NS_ENUM (NSInteger, JWBleImmediateDataEnum) {
 
 //通用点测枚举 Real-time data enumeration
 typedef NS_ENUM (NSInteger, JWBleCommonMeasurementEnum) {
-    JWBleCommonMeasurementEnum_BodyFat = 5//血脂
+    JWBleCommonMeasurementEnum_BodyFat = 5//体脂 body fat
 };
 
 //功能枚举 Function enumeration
+//重要（务必阅读）：
+//  1) 本枚举的“数值”具有协议含义：当 connedModel.functionData 长度 > 8 时，
+//     数值即“功能字节下标”，擅自调整顺序或插入新成员会导致老固件能力判断全部错位；
+//     新增功能请追加在末尾（或使用 10001+ 的设备功能 2 段）。
+//  2) 当 functionData 长度 <= 8 时，SDK 使用内置位图映射表判断，未列入该表的功能恒返回“不支持”。
+//  3) 判断支持请统一使用 [JWBleAction jwCheckFunctionStates:]，不要自行解析 functionData。
+//IMPORTANT: the numeric values are protocol-meaningful; do not reorder or insert members.
 typedef NS_ENUM (NSInteger, JWBleFunctionEnum) {
     JWBleFunctionEnum_Error = -1,//占位符 Placeholder
     
@@ -265,6 +311,7 @@ typedef NS_ENUM (NSInteger, JWBleFunctionEnum) {
     
     JWBleFunctionEnum_Stress = 37,//压力自动监测功能 Automatic Stress monitoring function
     JWBleFunctionEnum_HeatStress = 36,//热应激 Automatic Stress monitoring function
+    JWBleFunctionEnum_APPControlMotion = 35,//APP控制多运动 APP-controlled multi-sport
 
 #pragma mark - Device Function 2
     JWBleFunctionEnum_DevicePrivateBloodPressure = 10001, // 设备私人血压  Device private blood pressure
@@ -382,11 +429,13 @@ typedef NS_ENUM (NSInteger, JWBleLanguageEnum) {
 };
 
 //运动操作枚举 Motion enumeration
+//已废弃：当前 SDK 无对应公开 API（对应指令仅在内部实现），请勿在新代码中使用。
+//Deprecated: no public API uses it.
 typedef NS_ENUM (NSInteger, JWBleMotionActionEnum) {
     JWBleMotionActionEnum_Stop = 0,//停止 stop
     JWBleMotionActionEnum_Start = 1,//开始运动 Start exercise
     JWBleMotionActionEnum_Pause = 3//暂停 pause
-};
+} API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
  
 //同步数据状态 Synchronized data status
 typedef NS_ENUM (NSInteger, JWBleSyncStateEnum) {
@@ -509,6 +558,18 @@ typedef void (^JWBleFindPhoneV2CallBack)(BOOL start);
  */
 typedef void (^JWBleRealTimeHeartRateCallBack)(NSInteger hrValue);
 
+/// 设备多运动控制结果。statusModel 在通信失败、超时或断连时为 nil。
+typedef void (^JWBleDeviceMotionControlCallBack)(JWBleCommunicationStatus status, JWBleMotionStatusModel * _Nullable statusModel);
+
+/// 设备支持的多运动类型列表。元素为 JWBleDeviceMotionEnum 对应的 NSNumber。
+typedef void (^JWBleDeviceMotionTypeListCallBack)(JWBleCommunicationStatus status, NSArray<NSNumber *> * _Nonnull motionTypes);
+
+/// 设备多运动状态变化回调。
+typedef void (^JWBleDeviceMotionStatusChangeCallBack)(JWBleMotionStatusModel *statusModel);
+
+/// 设备多运动实时数据回调。
+typedef void (^JWBleDeviceMotionRealtimeDataCallBack)(JWBleMotionRealtimeDataModel *realtimeDataModel);
+
 /**
  脉冲结束回调 Pulse end callback
  */
@@ -625,13 +686,13 @@ typedef void (^JWBleRealTimeTemperatureCallBack)(float value, BOOL gradientStatu
 typedef void (^JWBleCommunicationCallBack)(JWBleCommunicationStatus status);
 
 //通用通信回调 -- 存在Respnonse  General Communication Callback - Response exists
-typedef void (^JWBleCommunicationReceiveCallBack)(JWBleCommunicationStatus status, NSData *responData);
+typedef void (^JWBleCommunicationReceiveCallBack)(JWBleCommunicationStatus status, NSData *responData) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 //通用功能回调 General function callback
 typedef void (^JWBleCommonFuctionReceiveCallBack)(JWBleCommunicationStatus communicationStatus, JWBleCommonFunctionsStatus functionStatus);
 
 //修改密码回调 Change password callback
-typedef void (^JWBleUpdatePWDCallBack)(JWBleUpdatePWDStatus status);
+typedef void (^JWBleUpdatePWDCallBack)(JWBleUpdatePWDStatus status) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 //Opus数据回调 -- Opus数据回调
 typedef void (^JWBleOpusDataCallBack)(NSData *responData);
@@ -640,7 +701,7 @@ typedef void (^JWBleOpusDataCallBack)(NSData *responData);
 typedef void (^JWBleDFUCallBack)(NSInteger didSend, NSInteger totalLength, JWBleDeviceDFUStatus deviceDFUStatus);
 
 //检查手环运动类型 是否支持回调 Check if the movement type of the bracelet supports callback
-typedef void (^JWBleCheckMotionSupportCallBack)(JWBleCommunicationStatus communicationStatus, BOOL support);
+typedef void (^JWBleCheckMotionSupportCallBack)(JWBleCommunicationStatus communicationStatus, BOOL support) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  获取电量回调
@@ -657,7 +718,7 @@ typedef void (^JWBleGetPowerCallBack)(JWBleCommunicationStatus communicationStat
     //JWImmediateDataEnum_Step:{step:xx,cal:xx,dis:xx}
     //JWImmediateDataEnum_HR:{hr:xx}
 //}
-typedef void (^JWBleGetImmediateDataCallBack)(JWBleCommunicationStatus status, NSDictionary *immediateDic);
+typedef void (^JWBleGetImmediateDataCallBack)(JWBleCommunicationStatus status, NSDictionary *immediateDic) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  心率上限操作回调 Heart rate upper limit operation callback
@@ -666,7 +727,7 @@ typedef void (^JWBleGetImmediateDataCallBack)(JWBleCommunicationStatus status, N
  @param open 是否开启 Whether to open
  @param value 提醒的值 Reminder value
  */
-typedef void (^JWBleHRReminderActionCallBack)(JWBleCommunicationStatus status, BOOL open, int value);
+typedef void (^JWBleHRReminderActionCallBack)(JWBleCommunicationStatus status, BOOL open, int value) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  久坐提醒回调 Sedentary reminder callback
@@ -687,7 +748,7 @@ typedef void (^JWBleSedentaryReminderActionCallBack)(JWBleCommunicationStatus st
  @param status 状态 status
  @param is12 是否12小时制 Whether 12 hours
  */
-typedef void (^JWBleTimeThemeActionCallBack)(JWBleCommunicationStatus status, BOOL is12);
+typedef void (^JWBleTimeThemeActionCallBack)(JWBleCommunicationStatus status, BOOL is12) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  主界面风格通信回调 Main interface style communication callback
@@ -696,7 +757,7 @@ typedef void (^JWBleTimeThemeActionCallBack)(JWBleCommunicationStatus status, BO
  @param curStyle 当前风格 Current style
  @param styleCount 风格数 Style number
  */
-typedef void (^JWBleMainInterfaceStyleBlock)(JWBleCommunicationStatus status, int curStyle, int styleCount);
+typedef void (^JWBleMainInterfaceStyleBlock)(JWBleCommunicationStatus status, int curStyle, int styleCount) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  转腕亮屏回调 Turn the wrist bright screen callback
@@ -715,7 +776,7 @@ typedef void (^JWBleTurnWristCreenActionCallBack)(JWBleCommunicationStatus statu
  @param start 是否开始计时 Whether to start timing
  @param showInDevice 是否显示在界面 Whether to display on the interface
  */
-typedef void (^JWBleStopwatchTimingActionCallBack)(JWBleCommunicationStatus status, BOOL start, BOOL showInDevice);
+typedef void (^JWBleStopwatchTimingActionCallBack)(JWBleCommunicationStatus status, BOOL start, BOOL showInDevice) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  测试心率回调 Test heart rate callback
@@ -766,7 +827,7 @@ typedef void (^JWBleMedicationReminderActionCallBack)(JWBleCommunicationStatus s
  @param status 状态 status
  @param showInDevice 是否显示在界面 Whether to display on the interface
  */
-typedef void (^JWBleFindPhoneActionCallBack)(JWBleCommunicationStatus status, BOOL showInDevice);
+typedef void (^JWBleFindPhoneActionCallBack)(JWBleCommunicationStatus status, BOOL showInDevice) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  心率自动检测回调 Heart rate automatic detection callback
@@ -812,7 +873,7 @@ typedef void (^JWBleNotDisturbActionCallBack)(JWBleCommunicationStatus status, J
  @param deviceTime 手环常用时长 Bracelet duration
  @param timeCount 剩余时长 Remaining time
  */
-typedef void (^JWBleTimerActionCallBack)(JWBleCommunicationStatus status, BOOL countingDown, BOOL showInDevice, int deviceTime, int timeCount);
+typedef void (^JWBleTimerActionCallBack)(JWBleCommunicationStatus status, BOOL countingDown, BOOL showInDevice, int deviceTime, int timeCount) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  运动操作回调 Motion operation callback
@@ -821,7 +882,7 @@ typedef void (^JWBleTimerActionCallBack)(JWBleCommunicationStatus status, BOOL c
  @param actionType 运动状态 Movement state
  @param motionType 运动类型 Type of exercise
  */
-typedef void (^JWBleMotionActionCallBack)(JWBleCommunicationStatus status, JWBleMotionActionEnum actionType, JWBleDeviceMotionEnum motionType);
+typedef void (^JWBleMotionActionCallBack)(JWBleCommunicationStatus status, JWBleMotionActionEnum actionType, JWBleDeviceMotionEnum motionType) API_DEPRECATED("当前 SDK 已无对应公开 API，请勿使用", ios(1.0, 1.0));
 
 /**
  获取通知回调 Get notification callback
@@ -917,3 +978,206 @@ typedef void (^JwBeltDataCallBack)(NSArray *originalSignals, NSArray *filterSign
   [JWBleAction jwGetDeviceSNIDWithBlock]
  */
 typedef void (^JwDeviceSwitchChangeCallBack)(NSData *deviceSwitchData);
+
+#pragma mark - 统一错误码 Unified error code
+
+/**
+ 统一错误码（2026-09-29 新增）
+ 
+ 设计说明：
+   1) SDK 原有回调仍保持原样（不改变任何方法签名），错误码通过下面的映射函数与
+      NSError 工厂按需转换，属纯增量能力；
+   2) 映射函数只做“状态枚举 → 错误码”的翻译，不发起任何通信；
+   3) 错误消息为英文技术描述（便于日志与问题追踪），面向用户的文案请集成方自行本地化。
+ 
+ Unified error code (added 2026-09-29)
+ 
+ Notes:
+   1) Existing callbacks are unchanged; these helpers only translate status enums into
+      error codes / NSError, so the addition is purely additive;
+   2) The mappings are pure conversions and never perform I/O;
+   3) Messages are English technical descriptions for logging/support. Localise
+      user-facing text in your app.
+ */
+typedef NS_ENUM(NSInteger, JWBleErrorCode) {
+    JWBleErrorCodeNone = 0,                             // 无错误 / no error
+
+    // MARK: 1xxx 状态、参数与通信 / state, parameter and communication
+    JWBleErrorCodeNotInitialized = 1000,                // 未调用 setUpWithUid: / SDK not initialised
+    JWBleErrorCodeNotConnected = 1001,                  // 设备未连接（或未完成同步）/ device not connected or not synced
+    JWBleErrorCodeDeviceBusy = 1002,                    // 设备繁忙（同步中、测量中）/ device busy
+    JWBleErrorCodeDeviceInDFU = 1003,                   // 设备处于 DFU 模式 / device in DFU mode
+    JWBleErrorCodePasswordError = 1004,                 // 通信密码错误 / communication password mismatch
+    JWBleErrorCodeUnsupported = 1005,                   // 设备不支持该功能 / feature not supported
+    JWBleErrorCodeInvalidParameter = 1006,              // 参数非法 / invalid parameter
+    JWBleErrorCodeOperationTimeout = 1007,              // 操作超时 / operation timeout
+    JWBleErrorCodeValueOutOfRange = 1008,               // 参数超出有效范围 / value out of range
+    JWBleErrorCodeCommunicationFailed = 1009,           // 通信失败（含未连接，SDK 未细分）/ communication failed
+
+    // MARK: 2xxx 蓝牙与链路 / Bluetooth and link
+    JWBleErrorCodeBluetoothPoweredOff = 2000,           // 系统蓝牙已关闭 / Bluetooth powered off
+    JWBleErrorCodeBluetoothUnauthorized = 2001,         // 蓝牙权限未授权 / Bluetooth not authorised
+    JWBleErrorCodeBluetoothUnsupported = 2002,          // 设备不支持蓝牙 / Bluetooth unsupported
+    JWBleErrorCodeBluetoothResetting = 2003,            // 蓝牙正在重置 / Bluetooth resetting
+    JWBleErrorCodeBluetoothUnknown = 2004,              // 蓝牙状态未知 / Bluetooth state unknown
+    JWBleErrorCodeConnectionFailed = 2005,              // 连接失败 / connection failed
+    JWBleErrorCodeConnectionTimeout = 2006,             // 连接或通信超时断开 / connection timeout
+    JWBleErrorCodeLinkLost = 2007,                      // 链路断开 / link lost
+    JWBleErrorCodePeersRemovedPairing = 2008,           // 系统配对信息被移除 / system pairing info removed
+
+    // MARK: 3xxx 设备与协议 / device and protocol
+    JWBleErrorCodeDeviceRespondFail = 3000,             // 设备返回失败 / device responded with failure
+    JWBleErrorCodeDeviceDataInvalid = 3001,             // 设备数据非法 / invalid data from device
+    JWBleErrorCodeSyncFailed = 3002,                    // 同步设备信息失败 / device info sync failed
+    JWBleErrorCodeSyncInconsistentTotals = 3003,        // 同步总数不一致 / inconsistent totals while syncing
+    JWBleErrorCodeBindFailed = 3004,                    // 绑定失败 / binding failed
+    JWBleErrorCodeBindRejected = 3005,                  // 绑定被用户拒绝 / binding rejected by the user
+    JWBleErrorCodeBindTimeout = 3006,                   // 绑定确认超时 / binding confirmation timeout
+
+    // MARK: 4xxx OTA / DFU
+    JWBleErrorCodeOTAFirmwareFileNotExist = 4000,       // 升级文件不存在或为空 / firmware file missing
+    JWBleErrorCodeOTAPeripheralIsNull = 4001,           // 没有可升级的设备 / no available peripheral
+    JWBleErrorCodeOTAFirmwareFileFormatInvalid = 4002,  // 固件格式非法 / invalid firmware format
+    JWBleErrorCodeOTAFirmwareParseFailed = 4003,        // 固件解析失败 / firmware parsing failed
+    JWBleErrorCodeOTAFirmwareVersionConsistent = 4004,  // 版本一致，无需升级（非错误）/ version consistent, upgrade skipped
+    JWBleErrorCodeOTAImageMismatch = 4005,              // 固件与设备不匹配 / image does not match the device
+    JWBleErrorCodeOTAImageTooOld = 4006,                // 固件版本低于设备当前版本 / image older than installed
+    JWBleErrorCodeOTADeviceBatteryLow = 4007,           // 设备电量过低 / device battery too low
+    JWBleErrorCodeOTADeviceNotSupport = 4008,           // 设备不支持该升级方式 / upgrade method unsupported
+    JWBleErrorCodeOTAStartFailed = 4009,                // 启动升级失败 / failed to start the upgrade
+    JWBleErrorCodeOTATransferFailed = 4010,             // 固件传输失败 / image transfer failed
+    JWBleErrorCodeOTAValidateFailed = 4011,             // 固件校验失败 / image validation failed
+    JWBleErrorCodeOTAActivateFailed = 4012,             // 固件激活失败 / image activation failed
+    JWBleErrorCodeOTATimeout = 4013,                    // 升级过程超时 / OTA timed out
+    JWBleErrorCodeOTADisconnected = 4014,               // 升级过程中断开 / disconnected during OTA
+    JWBleErrorCodeOTACancelled = 4015,                  // 升级被取消 / OTA cancelled
+    JWBleErrorCodeOTAFailed = 4016,                     // 升级失败（原因未细分）/ OTA failed (reason unclassified)
+
+    // MARK: 9xxx 未知 / unknown
+    JWBleErrorCodeUnknown = 9000                        // 未知错误 / unknown error
+};
+
+/// 错误域（NSError.domain）/ Error domain used by JWBleMakeError()
+FOUNDATION_EXPORT NSErrorDomain const JWBleErrorDomain;
+
+/// 错误码的英文技术描述 / English technical description of an error code
+NS_INLINE NSString *JWBleErrorMessageForCode(JWBleErrorCode code) {
+    switch (code) {
+        case JWBleErrorCodeNone:                            return @"No error";
+        case JWBleErrorCodeNotInitialized:                  return @"SDK is not initialised (call setUpWithUid: first)";
+        case JWBleErrorCodeNotConnected:                    return @"Device is not connected (or device info is not synced yet)";
+        case JWBleErrorCodeDeviceBusy:                      return @"Device is busy";
+        case JWBleErrorCodeDeviceInDFU:                     return @"Device is in DFU mode";
+        case JWBleErrorCodePasswordError:                   return @"Communication password mismatch";
+        case JWBleErrorCodeUnsupported:                     return @"Feature is not supported by the device";
+        case JWBleErrorCodeInvalidParameter:                return @"Invalid parameter";
+        case JWBleErrorCodeOperationTimeout:                return @"Operation timed out";
+        case JWBleErrorCodeValueOutOfRange:                 return @"Value is out of the valid range";
+        case JWBleErrorCodeCommunicationFailed:             return @"Communication failed";
+        case JWBleErrorCodeBluetoothPoweredOff:             return @"Bluetooth is powered off";
+        case JWBleErrorCodeBluetoothUnauthorized:           return @"Bluetooth permission is not authorised";
+        case JWBleErrorCodeBluetoothUnsupported:            return @"Bluetooth is not supported on this device";
+        case JWBleErrorCodeBluetoothResetting:              return @"Bluetooth is resetting";
+        case JWBleErrorCodeBluetoothUnknown:                return @"Bluetooth state is unknown";
+        case JWBleErrorCodeConnectionFailed:                return @"Failed to connect to the device";
+        case JWBleErrorCodeConnectionTimeout:               return @"Connection timed out";
+        case JWBleErrorCodeLinkLost:                        return @"Bluetooth link lost";
+        case JWBleErrorCodePeersRemovedPairing:             return @"System pairing information was removed";
+        case JWBleErrorCodeDeviceRespondFail:               return @"Device responded with a failure";
+        case JWBleErrorCodeDeviceDataInvalid:               return @"Invalid data received from the device";
+        case JWBleErrorCodeSyncFailed:                      return @"Failed to sync device information";
+        case JWBleErrorCodeSyncInconsistentTotals:          return @"Inconsistent totals while syncing";
+        case JWBleErrorCodeBindFailed:                      return @"Failed to bind the device";
+        case JWBleErrorCodeBindRejected:                    return @"Binding was rejected on the device";
+        case JWBleErrorCodeBindTimeout:                     return @"Binding confirmation timed out";
+        case JWBleErrorCodeOTAFirmwareFileNotExist:         return @"Firmware file does not exist or is empty";
+        case JWBleErrorCodeOTAPeripheralIsNull:             return @"No peripheral available for the upgrade";
+        case JWBleErrorCodeOTAFirmwareFileFormatInvalid:    return @"Firmware file format is invalid";
+        case JWBleErrorCodeOTAFirmwareParseFailed:          return @"Failed to parse the firmware package";
+        case JWBleErrorCodeOTAFirmwareVersionConsistent:    return @"Firmware version is already consistent, upgrade skipped";
+        case JWBleErrorCodeOTAImageMismatch:                return @"Firmware does not match this device";
+        case JWBleErrorCodeOTAImageTooOld:                  return @"Firmware is older than the installed version";
+        case JWBleErrorCodeOTADeviceBatteryLow:             return @"Device battery level is too low for an upgrade";
+        case JWBleErrorCodeOTADeviceNotSupport:             return @"Device does not support this upgrade method";
+        case JWBleErrorCodeOTAStartFailed:                  return @"Failed to start the upgrade";
+        case JWBleErrorCodeOTATransferFailed:               return @"Firmware transfer failed";
+        case JWBleErrorCodeOTAValidateFailed:               return @"Firmware validation failed";
+        case JWBleErrorCodeOTAActivateFailed:               return @"Firmware activation failed";
+        case JWBleErrorCodeOTATimeout:                      return @"OTA timed out";
+        case JWBleErrorCodeOTADisconnected:                 return @"Disconnected during the upgrade";
+        case JWBleErrorCodeOTACancelled:                    return @"Upgrade was cancelled";
+        case JWBleErrorCodeOTAFailed:                       return @"Upgrade failed";
+        case JWBleErrorCodeUnknown:
+        default:                                            return @"Unknown error";
+    }
+}
+
+/// 生成 NSError / Build an NSError with JWBleErrorDomain
+NS_INLINE NSError *JWBleMakeError(JWBleErrorCode code) {
+    return [NSError errorWithDomain:JWBleErrorDomain
+                              code:code
+                          userInfo:@{NSLocalizedDescriptionKey: JWBleErrorMessageForCode(code)}];
+}
+
+/// 生成携带底层错误的 NSError / Build an NSError carrying an underlying error
+NS_INLINE NSError *JWBleMakeErrorWithUnderlyingError(JWBleErrorCode code, NSError * _Nullable underlyingError) {
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    userInfo[NSLocalizedDescriptionKey] = JWBleErrorMessageForCode(code);
+    if (underlyingError) {
+        userInfo[NSUnderlyingErrorKey] = underlyingError;
+        userInfo[NSLocalizedFailureReasonErrorKey] = underlyingError.localizedDescription ?: @"";
+    }
+    return [NSError errorWithDomain:JWBleErrorDomain code:code userInfo:userInfo];
+}
+
+/// 通信状态 → 错误码 / JWBleCommunicationStatus → JWBleErrorCode
+NS_INLINE JWBleErrorCode JWBleErrorCodeFromCommunicationStatus(JWBleCommunicationStatus status) {
+    switch (status) {
+        case JWBleCommunicationStatus_Success:    return JWBleErrorCodeNone;
+        case JWBleCommunicationStatus_Faild:      return JWBleErrorCodeCommunicationFailed;
+        case JWBleCommunicationStatus_PWDError:   return JWBleErrorCodePasswordError;
+        case JWBleCommunicationStatus_IsDFUModel: return JWBleErrorCodeDeviceInDFU;
+        case JWBleCommunicationStatus_Busy:       return JWBleErrorCodeDeviceBusy;
+        default:                                  return JWBleErrorCodeUnknown;
+    }
+}
+
+/// 连接状态 → 错误码（成功态返回 JWBleErrorCodeNone）/ JWBleDeviceConnectStatus → JWBleErrorCode
+NS_INLINE JWBleErrorCode JWBleErrorCodeFromConnectStatus(JWBleDeviceConnectStatus status) {
+    switch (status) {
+        case JWBleDeviceConnectStatus_SyncFailure:                 return JWBleErrorCodeSyncFailed;
+        case JWBleDeviceConnectStatus_BondFailure:                 return JWBleErrorCodeBindFailed;
+        case JWBleDeviceConnectStatus_BondConfirm_NotAllowed:      return JWBleErrorCodeBindRejected;
+        case JWBleDeviceConnectStatus_BondConfirm_TimeOut:         return JWBleErrorCodeBindTimeout;
+        case JWBleDeviceConnectStatus_TimeOutDisconnect:           return JWBleErrorCodeConnectionTimeout;
+        case JWBleDeviceConnectStatus_BleRemovedPairingInformation: return JWBleErrorCodePeersRemovedPairing;
+        default:                                                   return JWBleErrorCodeNone;
+    }
+}
+
+/// 系统蓝牙状态 → 错误码 / JWBleCentralManagerState → JWBleErrorCode
+NS_INLINE JWBleErrorCode JWBleErrorCodeFromCentralManagerState(JWBleCentralManagerState state) {
+    switch (state) {
+        case JWBleCentralManagerState_PoweredOn:     return JWBleErrorCodeNone;
+        case JWBleCentralManagerState_PoweredOff:    return JWBleErrorCodeBluetoothPoweredOff;
+        case JWBleCentralManagerState_Unauthorized:  return JWBleErrorCodeBluetoothUnauthorized;
+        case JWBleCentralManagerState_Unsupported:   return JWBleErrorCodeBluetoothUnsupported;
+        case JWBleCentralManagerState_Resetting:     return JWBleErrorCodeBluetoothResetting;
+        case JWBleCentralManagerState_Unknown:       return JWBleErrorCodeBluetoothUnknown;
+        default:                                     return JWBleErrorCodeUnknown;
+    }
+}
+
+/// 固件升级状态 → 错误码（VersionConsistent 表示“无需升级”，不是失败）/ JWBleDeviceDFUStatus → JWBleErrorCode
+NS_INLINE JWBleErrorCode JWBleErrorCodeFromDFUStatus(JWBleDeviceDFUStatus status) {
+    switch (status) {
+        case JWBleDeviceDFUStatus_Start:
+        case JWBleDeviceDFUStatus_Updating:
+        case JWBleDeviceDFUStatus_Success:            return JWBleErrorCodeNone;
+        case JWBleDeviceDFUStatus_FileNotExist:       return JWBleErrorCodeOTAFirmwareFileNotExist;
+        case JWBleDeviceDFUStatus_PeripheralIsNull:   return JWBleErrorCodeOTAPeripheralIsNull;
+        case JWBleDeviceDFUStatus_VersionConsistent:  return JWBleErrorCodeOTAFirmwareVersionConsistent;
+        case JWBleDeviceDFUStatus_Failure:
+        default:                                      return JWBleErrorCodeOTAFailed;
+    }
+}

@@ -14,5 +14,7 @@
 #import "JWBleHeatStressReminderModel.h"
 #import "JWNotDisturbModel.h"
 #import "JWCountDownModel.h"
+#import "JWBleMotionStatusModel.h"
+#import "JWBleMotionRealtimeDataModel.h"
 
 #endif /* JWBlePublicModelDefine_h */

@@ -9,6 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "JWBlePublicModelDefine.h"
 
+/// 历史数据读取（important）
+///
+/// 使用约定：
+///   1) 所有 jwGetXxx 接口读取的是**本地数据库**，数据来自上一次
+///      [JWBleDataAction jwSyncDataWithCallBack:]；调用前请先确认同步完成。
+///   2) 读取接口为**纯只读**：同一时间戳只返回第一条（去重），但不会修改/删除数据库记录；
+///      time <= 0 的无效记录会被跳过。
+///   3) 需要清理历史数据时请使用显式接口：jwRemoveDataTimeLessThan:dataType:、
+///      jwRemoveDataTime:dataType:、jwFixDBData。
+///   4) 日期参数格式为 yyyyMMdd（如 20180911）；另一组 ByStartT:endT: 接口使用秒级时间戳。
+///   5) 接口为同步读库（回调同步触发），数据量大时请放到子线程调用。
+///
+/// History data reading conventions: local DB only, read-only, de-duplicated by timestamp,
+/// yyyyMMdd or second-level timestamps, synchronous callbacks.
 @interface JWBleDataAction : NSObject
 
 /**
@@ -807,4 +821,3 @@
 
 
 @end
-

@@ -44,9 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
  
  默认: false
  
+ 注意：开启后会输出大量蓝牙交互与设备信息（含 MAC、UID 等），生产环境请关闭。
+ 
  Whether to display the log
  
   Default: false
+  Warning: may contain device identifiers (MAC/UID). Keep it off in production.
  */
 @property(nonatomic, assign) BOOL showLog;
 /**
@@ -63,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
       1:  The premise showLog must be true, otherwise it is invalid
       2:  The way to get the log is [JWLogModel getLog];
       3：Turning on saving logs will affect performance
+    Warning: saved logs may contain device identifiers (MAC/UID). Keep it off in production.
  */
 @property(nonatomic, assign) BOOL saveLog;
 /**
@@ -98,16 +102,32 @@ NS_ASSUME_NONNULL_BEGIN
 ///
 @property(nonatomic, assign) BOOL isSNQR;
 
+/// 是否匿名使用
+/// 决定是否登录绑定设备
+/// 默认：false
+/// Default: false
+///
+@property(nonatomic, assign) BOOL isSupportAnonymousUse;
+
 @property(nonatomic, assign) BOOL checkSpecialOtaShutdown;
-@property(nonatomic, strong) NSMutableArray *cacheLogArr;
 
 /**
  是否已连接，但是不包括登录成功和绑定成功
+ 只读：由 SDK 内部维护，请勿赋值。
  
  Whether it is connected, but does not include the successful login and successful binding
+ Read-only: maintained by the SDK internally.
  */
-@property(nonatomic, assign) BOOL isConnected;
-@property (nonatomic, assign) BOOL isConnecing;
+@property(nonatomic, assign, readonly) BOOL isConnected;
+
+/**
+ 是否正在连接
+ 只读：由 SDK 内部维护，请勿赋值。
+ 
+ Whether it is connecting
+ Read-only: maintained by the SDK internally.
+ */
+@property (nonatomic, assign, readonly) BOOL isConnecing;
 
 /**
  链接状态
@@ -115,6 +135,18 @@ NS_ASSUME_NONNULL_BEGIN
  Link status
  */
 @property(nonatomic, assign) JWBleDeviceConnectStatus deviceConnectStatus;
+
+/**
+ 最近一次连接类失败的错误码（成功/正常态为 JWBleErrorCodeNone）
+ 
+ 说明：由 SDK 在收到连接类状态回调时同步更新，可直接用于日志与用户提示；
+ 用 JWBleErrorMessageForCode() 取英文描述，或自行本地化。
+ JWBleDeviceConnectStatus 与错误码的对应关系见 JWBleErrorCodeFromConnectStatus()。
+ 
+ The error code of the last connection-class failure (JWBleErrorCodeNone when the last
+ state is normal). Convert it with JWBleErrorMessageForCode().
+ */
+@property(nonatomic, assign, readonly) JWBleErrorCode lastErrorCode;
 
 /**
  已连接的model
@@ -143,6 +175,15 @@ NS_ASSUME_NONNULL_BEGIN
  Synchronous data progress callback
  */
 @property(nonatomic, copy) JWBleSynchronousDataProgressCallBack synchronousDataProgressCallBack;
+
+/**
+ 获取电量回调
+ 使用方式：[JWBleAction jwGetDeviceCurrentBatteryWithCallBack:]，设备返回后回调
+ 
+ Battery callback
+ Usage: [JWBleAction jwGetDeviceCurrentBatteryWithCallBack:]
+ */
+@property(nonatomic, copy) JWBleGetPowerCallBack getPowerCallBack;
 
 /**
  LANGCO 翻译回调
@@ -184,6 +225,12 @@ NS_ASSUME_NONNULL_BEGIN
  Real-time temperature callback
  */
 @property(nonatomic, copy) JWBleRealTimeTemperatureCallBack realTimeTemperatureCallBack;
+
+/// 设备多运动状态变化回调。
+@property(nonatomic, copy) JWBleDeviceMotionStatusChangeCallBack deviceMotionStatusChangeCallBack;
+
+/// 设备多运动实时数据回调。
+@property(nonatomic, copy) JWBleDeviceMotionRealtimeDataCallBack deviceMotionRealtimeDataCallBack;
 
 /**
  脉冲结束回调 Pulse end callback

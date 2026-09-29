@@ -11,6 +11,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// 设备模型
+///
+/// 字段可用时机（important）：
+///   1) 扫描阶段即可用：deviceName、rssi、macAddress、systemMacAddress、per、advertisementData；
+///      其中系统已连接设备可能没有广播上下文，此时 rssi 为 @0、macAddress/systemMacAddress 回退为系统 UUID。
+///   2) 连接并同步成功（JWBleDeviceConnectStatus_SyncSuccess）后才可用：
+///      versionName/versionCode、font*/resource* 版本、power、deviceNumber、functionData、functionDataV2、
+///      hideFunctionMenu、notiData、deviceSwitchData、chargIng、headsetPaired、headphoneDeviceStatus、
+///      deviceStatusTypeArr、customizedFunctionDic、chipType、platform、DeviceInfoData。
+///   3) 判断设备能力请使用 [JWBleAction jwCheckFunctionStates:] 等接口，不要自行解析 functionData。
 @interface JWBleDeviceModel : NSObject
 
 /**
